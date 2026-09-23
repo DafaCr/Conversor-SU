@@ -52,7 +52,7 @@
   });
 
   document.addEventListener("click", function (evento) {
-    const tocaBotonCopiar = evento.target.closest && evento.target.closest(".sku-copiar");
+    const tocaBotonCopiar = evento.target.closest && evento.target.closest(".boton-copiar-codigo");
     const tocaBotonBuscar = evento.target.closest && evento.target.closest(".btn-buscar-discreto");
     if (!tocaBotonCopiar && !tocaBotonBuscar) {
       input.focus();
@@ -141,9 +141,9 @@
 
     filasDoc.innerHTML = "";
     const fila = document.createElement("div");
-    fila.className = "sku-fila sku-fila--vacia";
+    fila.className = "fila-codigo fila-codigo--vacia";
     const texto = document.createElement("span");
-    texto.className = "sku-valor";
+    texto.className = "valor-codigo";
     texto.textContent = "Buscando…";
     fila.appendChild(texto);
     filasDoc.appendChild(fila);
@@ -172,7 +172,7 @@
     resultadoListo = true;
 
     // Se copia automático el nombre completo en cuanto aparece,
-    // igual que el primer SKU en un combo del conversor principal.
+    // igual que el primer código en un combo del conversor principal.
     copiarAlPortapapeles(datos.nombre, filaNombre.boton);
 
     input.select();
@@ -195,19 +195,19 @@
 
   function crearFila(etiquetaTexto, valorTexto) {
     const fila = document.createElement("div");
-    fila.className = "sku-fila sku-fila--clickeable";
+    fila.className = "fila-codigo fila-codigo--clickeable";
 
     const etiqueta = document.createElement("span");
-    etiqueta.className = "sku-etiqueta";
+    etiqueta.className = "etiqueta-codigo";
     etiqueta.textContent = etiquetaTexto;
 
     const valor = document.createElement("span");
-    valor.className = "sku-valor";
+    valor.className = "valor-codigo";
     valor.textContent = valorTexto;
 
     const boton = document.createElement("button");
     boton.type = "button";
-    boton.className = "sku-copiar";
+    boton.className = "boton-copiar-codigo";
     boton.textContent = "Copiar";
     boton.addEventListener("click", function () {
       copiarAlPortapapeles(valorTexto, boton);
@@ -220,7 +220,7 @@
     // Permite copiar tocando cualquier parte de la fila (la etiqueta,
     // el valor, o el espacio vacío), no solo el botón pequeño.
     fila.addEventListener("click", function (evento) {
-      if (evento.target.closest(".sku-copiar")) return;
+      if (evento.target.closest(".boton-copiar-codigo")) return;
       copiarAlPortapapeles(valorTexto, boton);
     });
 

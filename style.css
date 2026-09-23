@@ -1,5 +1,5 @@
 /* ============================================================
-   CONVERSOR SKU — Tema morado/negro
+   CONVERSOR DE CÓDIGOS — Tema morado/negro
    Tipografía: Space Grotesk (títulos) + Inter (cuerpo/datos)
    ============================================================ */
 
@@ -224,13 +224,13 @@ body {
   color: var(--ok-texto);
 }
 
-.skus-lista {
+.lista-codigos {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-.sku-fila {
+.fila-codigo {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -242,24 +242,24 @@ body {
   text-align: left;
 }
 
-.sku-fila--clickeable {
+.fila-codigo--clickeable {
   cursor: pointer;
   transition: background 0.15s ease, border-color 0.15s ease;
 }
 
-.sku-fila--clickeable:hover {
+.fila-codigo--clickeable:hover {
   background: rgba(165, 26, 145, 0.14);
   border-color: rgba(165, 26, 145, 0.32);
 }
 
-.sku-fila--vacia {
+.fila-codigo--vacia {
   background: transparent;
   border-color: var(--tarjeta-borde);
   justify-content: center;
   text-align: center;
 }
 
-.sku-etiqueta {
+.etiqueta-codigo {
   font-size: 0.75rem;
   color: var(--texto-tenue);
   text-transform: uppercase;
@@ -267,11 +267,11 @@ body {
   flex-shrink: 0;
 }
 
-.sku-fila--vacia .sku-etiqueta {
+.fila-codigo--vacia .etiqueta-codigo {
   margin-right: 8px;
 }
 
-.sku-valor {
+.valor-codigo {
   flex: 1;
   font-family: "Space Grotesk", "Inter", sans-serif;
   font-size: 1.4rem;
@@ -282,11 +282,11 @@ body {
   text-align: center;
 }
 
-.resultado--ok .sku-valor {
+.resultado--ok .valor-codigo {
   color: var(--morado-claro);
 }
 
-.sku-copiar {
+.boton-copiar-codigo {
   flex-shrink: 0;
   padding: 7px 15px;
   font-size: 0.85rem;
@@ -300,12 +300,12 @@ body {
   transition: background 0.15s ease, color 0.15s ease;
 }
 
-.sku-copiar:hover {
+.boton-copiar-codigo:hover {
   background: var(--morado);
   color: #fff;
 }
 
-.sku-copiar.copiado {
+.boton-copiar-codigo.copiado {
   border-color: var(--ok-borde);
   color: var(--ok-texto);
   background: transparent;
@@ -400,15 +400,8 @@ body {
   color: var(--error-texto);
 }
 
-.contador {
-  margin: 18px 0 0;
-  text-align: center;
-  font-size: 0.8rem;
-  color: var(--texto-tenue-2);
-}
-
 .mensaje-broma {
-  margin: 6px 0 0;
+  margin: 18px 0 0;
   text-align: center;
   font-size: 0.72rem;
   line-height: 1.4;
@@ -467,7 +460,7 @@ body {
   font-weight: 600;
 }
 
-.lista-item-sku {
+.lista-item-codigo {
   font-size: 0.9rem;
   font-weight: 700;
   color: var(--morado-claro);

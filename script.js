@@ -15,9 +15,8 @@
   const input = document.getElementById("input-codigo");
   const resultado = document.getElementById("resultado");
   const resultadoNombre = document.getElementById("resultado-nombre");
-  const skusLista = document.getElementById("skus-lista");
+  const listaCodigos = document.getElementById("lista-codigos");
   const mensajeError = document.getElementById("mensaje-error");
-  const contador = document.getElementById("contador");
   const listaResultados = document.getElementById("lista-resultados");
   const listaItems = document.getElementById("lista-items");
   const resultadoAcciones = document.getElementById("resultado-acciones");
@@ -29,7 +28,7 @@
   const modalTitulo = document.getElementById("modal-titulo");
   const formAgregar = document.getElementById("form-agregar");
   const campoNombre = document.getElementById("campo-nombre");
-  const campoSku = document.getElementById("campo-sku");
+  const campoReferencia = document.getElementById("campo-referencia");
   const campoCodigo = document.getElementById("campo-codigo");
   const modalMensaje = document.getElementById("modal-mensaje");
   const btnCancelar = document.getElementById("btn-cancelar");
@@ -40,19 +39,18 @@
   const modalAccesoFondo = document.getElementById("modal-acceso-fondo");
   const formAcceso = document.getElementById("form-acceso");
   const campoAccesoNombre = document.getElementById("campo-acceso-nombre");
-  const campoAccesoSkus = document.getElementById("campo-acceso-skus");
+  const campoAccesoReferencias = document.getElementById("campo-acceso-referencias");
   const modalAccesoMensaje = document.getElementById("modal-acceso-mensaje");
   const btnAccesoCancelar = document.getElementById("btn-acceso-cancelar");
   const btnAccesoGuardar = document.getElementById("btn-acceso-guardar");
 
   let codigosActivos = typeof codigos === "object" ? codigos : {};
-  actualizarContador("local");
 
   let indiceSeleccionado = -1;
   let claveProductoActual = null; // código del producto mostrado en pantalla (para Editar/Eliminar)
 
-  // Para el ciclo de "Enter copia el siguiente SKU" cuando hay un combo.
-  let botonesSkuActuales = [];
+  // Para el ciclo de "Enter copia el siguiente código" cuando hay un combo.
+  let botonesCodigoActuales = [];
   let proximoIndiceCopia = 0;
 
   // Estado del modal: si estamos editando un producto existente, y
@@ -66,7 +64,7 @@
   cargarAccesosRemotos();
 
   document.addEventListener("click", function (evento) {
-    const tocaBotonCopiar = evento.target.closest && evento.target.closest(".sku-copiar");
+    const tocaBotonCopiar = evento.target.closest && evento.target.closest(".boton-copiar-codigo");
     const tocaItemDeLista = evento.target.closest && evento.target.closest(".lista-item");
     const tocaBotonAgregar = evento.target.closest && evento.target.closest(".btn-flotante");
     const tocaModal = evento.target.closest && evento.target.closest(".modal-fondo");
@@ -88,7 +86,7 @@
 
   input.addEventListener("input", function () {
     // Si el usuario escribe algo, ya no seguimos en modo "copiar
-    // el siguiente SKU del combo": el próximo Enter debe buscar.
+    // el siguiente código del combo": el próximo Enter debe buscar.
     proximoIndiceCopia = 0;
   });
 
@@ -117,10 +115,10 @@
     if (evento.key === "Enter") {
       evento.preventDefault();
 
-      // Si ya hay un combo mostrado y quedan SKUs por copiar, el
-      // siguiente Enter copia el siguiente SKU en vez de buscar de nuevo.
-      if (proximoIndiceCopia > 0 && proximoIndiceCopia < botonesSkuActuales.length) {
-        copiarAlPortapapeles(botonesSkuActuales[proximoIndiceCopia].sku, botonesSkuActuales[proximoIndiceCopia].boton);
+      // Si ya hay un combo mostrado y quedan códigos por copiar, el
+      // siguiente Enter copia el siguiente código en vez de buscar de nuevo.
+      if (proximoIndiceCopia > 0 && proximoIndiceCopia < botonesCodigoActuales.length) {
+        copiarAlPortapapeles(botonesCodigoActuales[proximoIndiceCopia].codigo, botonesCodigoActuales[proximoIndiceCopia].boton);
         proximoIndiceCopia++;
         return;
       }
@@ -142,12 +140,6 @@
     items[indiceSeleccionado].scrollIntoView({ block: "nearest" });
   }
 
-  function actualizarContador(origen) {
-    const total = Object.keys(codigosActivos).length;
-    const textoOrigen = origen === "sheets" ? "desde Google Sheets" : "locales";
-    contador.textContent = total + " producto(s) cargados (" + textoOrigen + ")";
-  }
-
   function cargarProductosRemotos() {
     if (!URL_APPS_SCRIPT || URL_APPS_SCRIPT.indexOf("PEGA_AQUI") !== -1) {
       return;
@@ -161,7 +153,6 @@
       .then(function (productosRemotos) {
         if (productosRemotos && Object.keys(productosRemotos).length > 0) {
           codigosActivos = productosRemotos;
-          actualizarContador("sheets");
         }
       })
       .catch(function () {
@@ -171,7 +162,7 @@
   }
 
   // ------------------------------------------------------------
-  // ACCESOS RÁPIDOS (botones grandes que copian un SKU al instante)
+  // ACCESOS RÁPIDOS (botones grandes que copian un código al instante)
   // ------------------------------------------------------------
 
   let accesosActuales = [];
@@ -294,9 +285,9 @@
       evento.preventDefault();
 
       const nombre = campoAccesoNombre.value.trim();
-      const skusTexto = campoAccesoSkus.value.trim();
+      const textoCodigos = campoAccesoReferencias.value.trim();
 
-      if (!nombre || !skusTexto) {
+      if (!nombre || !textoCodigos) {
         modalAccesoMensaje.textContent = "Completa los 2 campos.";
         modalAccesoMensaje.hidden = false;
         modalAccesoMensaje.classList.remove("exito");
@@ -317,15 +308,15 @@
         method: "POST",
         mode: "no-cors",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ tipo: "nuevo_acceso", nombre: nombre, skus: skusTexto, clave: CLAVE_SECRETA })
+        body: JSON.stringify({ tipo: "nuevo_acceso", nombre: nombre, skus: textoCodigos, clave: CLAVE_SECRETA })
       }).then(function () {
-        const skusArray = skusTexto.split(",").map(function (s) { return s.trim(); }).filter(function (s) { return s !== ""; });
+        const arrayCodigos = textoCodigos.split(",").map(function (s) { return s.trim(); }).filter(function (s) { return s !== ""; });
 
         const existente = accesosActuales.findIndex(function (a) { return a.nombre.toLowerCase() === nombre.toLowerCase(); });
         if (existente !== -1) {
-          accesosActuales[existente] = { nombre: nombre, skus: skusArray };
+          accesosActuales[existente] = { nombre: nombre, skus: arrayCodigos };
         } else {
-          accesosActuales.push({ nombre: nombre, skus: skusArray });
+          accesosActuales.push({ nombre: nombre, skus: arrayCodigos });
         }
         renderizarAccesos();
 
@@ -364,11 +355,11 @@
     return null;
   }
 
-  // Busca si un SKU ya pertenece a OTRO producto (para avisar antes
+  // Busca si un código ya pertenece a OTRO producto (para avisar antes
   // de guardar). codigoExcluir permite ignorar el producto que se
   // está editando actualmente (no debe "chocar" contra sí mismo).
-  function buscarProductoPorSku(sku, codigoExcluir) {
-    const skuMinuscula = sku.toLowerCase();
+  function buscarProductoPorCodigo(codigo, codigoExcluir) {
+    const codigoMinuscula = codigo.toLowerCase();
     const entradas = Object.entries(codigosActivos);
 
     for (let i = 0; i < entradas.length; i++) {
@@ -379,11 +370,11 @@
         continue;
       }
 
-      const tieneSku = producto.skus.some(function (s) {
-        return s.toLowerCase() === skuMinuscula;
+      const tieneCodigo = producto.skus.some(function (s) {
+        return s.toLowerCase() === codigoMinuscula;
       });
 
-      if (tieneSku) {
+      if (tieneCodigo) {
         return { clave: clave, producto: producto };
       }
     }
@@ -425,7 +416,7 @@
     input.select();
   }
 
-  function mostrarResultadoOk(clave, skus, nombre) {
+  function mostrarResultadoOk(clave, codigosProducto, nombre) {
     resultado.classList.remove("resultado--vacio", "resultado--error");
     resultado.classList.add("resultado--ok");
 
@@ -435,22 +426,22 @@
     claveProductoActual = clave;
     resultadoAcciones.hidden = false;
 
-    botonesSkuActuales = renderizarSkus(skus);
+    botonesCodigoActuales = renderizarCodigos(codigosProducto);
 
-    // Se copia automático el primer SKU. Si hay más de uno (combo),
+    // Se copia automático el primer código. Si hay más de uno (combo),
     // el próximo Enter (sin escribir nada nuevo) copia el siguiente.
-    copiarAlPortapapeles(botonesSkuActuales[0].sku, botonesSkuActuales[0].boton);
+    copiarAlPortapapeles(botonesCodigoActuales[0].codigo, botonesCodigoActuales[0].boton);
     proximoIndiceCopia = 1;
   }
 
   function mostrarResultadoError(consulta) {
     resultado.classList.remove("resultado--vacio", "resultado--ok");
     resultadoNombre.textContent = "";
-    skusLista.innerHTML = "";
+    listaCodigos.innerHTML = "";
     mensajeError.hidden = false;
     resultadoAcciones.hidden = true;
     claveProductoActual = null;
-    botonesSkuActuales = [];
+    botonesCodigoActuales = [];
     proximoIndiceCopia = 0;
 
     resultado.classList.remove("resultado--error");
@@ -467,49 +458,49 @@
     mensajeError.hidden = true;
     resultadoAcciones.hidden = true;
     claveProductoActual = null;
-    botonesSkuActuales = [];
+    botonesCodigoActuales = [];
     proximoIndiceCopia = 0;
 
-    skusLista.innerHTML = "";
+    listaCodigos.innerHTML = "";
     const filaVacia = document.createElement("div");
-    filaVacia.className = "sku-fila sku-fila--vacia";
+    filaVacia.className = "fila-codigo fila-codigo--vacia";
 
     const etiqueta = document.createElement("span");
-    etiqueta.className = "sku-etiqueta";
-    etiqueta.textContent = "Código SKU";
+    etiqueta.className = "etiqueta-codigo";
+    etiqueta.textContent = "Código";
 
     const valor = document.createElement("span");
-    valor.className = "sku-valor";
+    valor.className = "valor-codigo";
     valor.textContent = "—";
 
     filaVacia.appendChild(etiqueta);
     filaVacia.appendChild(valor);
-    skusLista.appendChild(filaVacia);
+    listaCodigos.appendChild(filaVacia);
   }
 
-  function renderizarSkus(skus) {
-    skusLista.innerHTML = "";
-    const esCombo = skus.length > 1;
+  function renderizarCodigos(listaDeCodigos) {
+    listaCodigos.innerHTML = "";
+    const esCombo = listaDeCodigos.length > 1;
     const botones = [];
 
-    skus.forEach(function (sku, indice) {
+    listaDeCodigos.forEach(function (codigo, indice) {
       const fila = document.createElement("div");
-      fila.className = "sku-fila sku-fila--clickeable";
+      fila.className = "fila-codigo fila-codigo--clickeable";
 
       const etiqueta = document.createElement("span");
-      etiqueta.className = "sku-etiqueta";
-      etiqueta.textContent = esCombo ? "SKU " + (indice + 1) : "Código SKU";
+      etiqueta.className = "etiqueta-codigo";
+      etiqueta.textContent = esCombo ? "Código " + (indice + 1) : "Código";
 
       const valor = document.createElement("span");
-      valor.className = "sku-valor";
-      valor.textContent = sku;
+      valor.className = "valor-codigo";
+      valor.textContent = codigo;
 
       const boton = document.createElement("button");
       boton.type = "button";
-      boton.className = "sku-copiar";
+      boton.className = "boton-copiar-codigo";
       boton.textContent = "Copiar";
       boton.addEventListener("click", function () {
-        copiarAlPortapapeles(sku, boton);
+        copiarAlPortapapeles(codigo, boton);
       });
 
       fila.appendChild(etiqueta);
@@ -519,13 +510,13 @@
       // Permite copiar tocando cualquier parte de la fila, no solo
       // el botón pequeño "Copiar".
       fila.addEventListener("click", function (evento) {
-        if (evento.target.closest(".sku-copiar")) return;
-        copiarAlPortapapeles(sku, boton);
+        if (evento.target.closest(".boton-copiar-codigo")) return;
+        copiarAlPortapapeles(codigo, boton);
       });
 
-      skusLista.appendChild(fila);
+      listaCodigos.appendChild(fila);
 
-      botones.push({ sku: sku, boton: boton });
+      botones.push({ codigo: codigo, boton: boton });
     });
 
     return botones;
@@ -547,12 +538,12 @@
       nombreSpan.className = "lista-item-nombre";
       nombreSpan.textContent = producto.nombre;
 
-      const skuSpan = document.createElement("span");
-      skuSpan.className = "lista-item-sku";
-      skuSpan.textContent = producto.skus.join(" + ");
+      const codigoSpan = document.createElement("span");
+      codigoSpan.className = "lista-item-codigo";
+      codigoSpan.textContent = producto.skus.join(" + ");
 
       boton.appendChild(nombreSpan);
-      boton.appendChild(skuSpan);
+      boton.appendChild(codigoSpan);
 
       boton.addEventListener("click", function () {
         ocultarListaResultados();
@@ -627,7 +618,7 @@
     guardarProducto();
   });
 
-  [campoNombre, campoSku, campoCodigo].forEach(function (campo) {
+  [campoNombre, campoReferencia, campoCodigo].forEach(function (campo) {
     campo.addEventListener("input", function () {
       if (confirmacionPendientePara !== null) {
         confirmacionPendientePara = null;
@@ -667,7 +658,7 @@
     confirmacionPendientePara = null;
 
     campoNombre.value = producto.nombre;
-    campoSku.value = producto.skus.join(",");
+    campoReferencia.value = producto.skus.join(",");
     campoCodigo.value = claveProductoActual;
     campoNombre.focus();
   }
@@ -679,10 +670,10 @@
 
   function guardarProducto() {
     const nombre = campoNombre.value.trim();
-    const skusTexto = campoSku.value.trim();
+    const textoCodigos = campoReferencia.value.trim();
     const codigo = campoCodigo.value.trim();
 
-    if (!nombre || !skusTexto || !codigo) {
+    if (!nombre || !textoCodigos || !codigo) {
       mostrarMensajeModal("Completa los 3 campos.", false);
       return;
     }
@@ -693,9 +684,9 @@
     }
 
     const codigoAExcluir = modoEdicion ? codigoOriginalEdicion : null;
-    const skusArray = skusTexto.split(",").map(function (s) { return s.trim(); }).filter(function (s) { return s !== ""; });
+    const arrayCodigos = textoCodigos.split(",").map(function (s) { return s.trim(); }).filter(function (s) { return s !== ""; });
 
-    // --- Verificar duplicados (código y cada SKU) ---
+    // --- Verificar duplicados (código y cada referencia) ---
     const advertencias = [];
 
     const claveExistente = buscarClaveExacta(codigo);
@@ -705,14 +696,14 @@
       advertencias.push('el código ya pertenece a "' + productoExistente.nombre + '"');
     }
 
-    skusArray.forEach(function (sku) {
-      const coincidenciaSku = buscarProductoPorSku(sku, codigoAExcluir);
-      if (coincidenciaSku) {
-        advertencias.push('el SKU ' + sku + ' ya pertenece a "' + coincidenciaSku.producto.nombre + '"');
+    arrayCodigos.forEach(function (codigoIndividual) {
+      const coincidenciaCodigo = buscarProductoPorCodigo(codigoIndividual, codigoAExcluir);
+      if (coincidenciaCodigo) {
+        advertencias.push('el código ' + codigoIndividual + ' ya pertenece a "' + coincidenciaCodigo.producto.nombre + '"');
       }
     });
 
-    const claveConfirmacion = codigo.toLowerCase() + "|" + skusTexto.toLowerCase();
+    const claveConfirmacion = codigo.toLowerCase() + "|" + textoCodigos.toLowerCase();
 
     if (advertencias.length > 0 && confirmacionPendientePara !== claveConfirmacion) {
       confirmacionPendientePara = claveConfirmacion;
@@ -725,8 +716,8 @@
     btnGuardar.textContent = "Guardando…";
 
     const payload = modoEdicion
-      ? { tipo: "editar_producto", codigoOriginal: codigoOriginalEdicion, codigo: codigo, skus: skusTexto, nombre: nombre, clave: CLAVE_SECRETA }
-      : { tipo: "nuevo_producto", codigo: codigo, skus: skusTexto, nombre: nombre, clave: CLAVE_SECRETA };
+      ? { tipo: "editar_producto", codigoOriginal: codigoOriginalEdicion, codigo: codigo, skus: textoCodigos, nombre: nombre, clave: CLAVE_SECRETA }
+      : { tipo: "nuevo_producto", codigo: codigo, skus: textoCodigos, nombre: nombre, clave: CLAVE_SECRETA };
 
     fetch(URL_APPS_SCRIPT, {
       method: "POST",
@@ -737,13 +728,12 @@
       if (modoEdicion && codigoOriginalEdicion.toLowerCase() !== codigo.toLowerCase()) {
         delete codigosActivos[codigoOriginalEdicion];
       }
-      codigosActivos[codigo] = { skus: skusArray, nombre: nombre };
-      actualizarContador(URL_APPS_SCRIPT.indexOf("PEGA_AQUI") === -1 ? "sheets" : "local");
+      codigosActivos[codigo] = { skus: arrayCodigos, nombre: nombre };
 
       mostrarMensajeModal(modoEdicion ? "Cambios guardados." : "Producto guardado.", true);
 
       if (modoEdicion && claveProductoActual && claveProductoActual.toLowerCase() === codigoOriginalEdicion.toLowerCase()) {
-        mostrarResultadoOk(codigo, skusArray, nombre);
+        mostrarResultadoOk(codigo, arrayCodigos, nombre);
       }
 
       setTimeout(function () {
@@ -796,7 +786,6 @@
       body: JSON.stringify({ tipo: "eliminar_producto", codigo: codigoAEliminar, clave: CLAVE_SECRETA })
     }).then(function () {
       delete codigosActivos[codigoAEliminar];
-      actualizarContador(URL_APPS_SCRIPT.indexOf("PEGA_AQUI") === -1 ? "sheets" : "local");
       mostrarResultadoVacio();
       input.value = "";
       input.focus();

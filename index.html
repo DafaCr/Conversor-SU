@@ -64,7 +64,7 @@
 
       <section id="resultado" class="resultado resultado--vacio" aria-live="polite">
         <span id="resultado-nombre" class="resultado-nombre"></span>
-        <div id="skus-lista" class="skus-lista"></div>
+        <div id="lista-codigos" class="lista-codigos"></div>
         <p id="mensaje-error" class="mensaje-error" hidden>CÓDIGO NO REGISTRADO</p>
         <div id="resultado-acciones" class="resultado-acciones" hidden>
           <button id="btn-editar" type="button" class="accion-btn">Editar</button>
@@ -77,7 +77,6 @@
         <div id="lista-items" class="lista-items"></div>
       </section>
 
-      <p id="contador" class="contador"></p>
       <p class="mensaje-broma">Solo queria que se vea bien y ya ...<br>Espero un dia puedan actualizar correctamente su base de datos con los codigos de productos :)</p>
     </main>
 
@@ -103,8 +102,8 @@
       <label for="campo-nombre" class="modal-etiqueta">Nombre del producto</label>
       <input type="text" id="campo-nombre" class="modal-input" autocomplete="off" required>
 
-      <label for="campo-sku" class="modal-etiqueta">SKU</label>
-      <input type="text" id="campo-sku" class="modal-input" autocomplete="off" placeholder="Ej: 0047 (o 0047,0048 si es combo)" required>
+      <label for="campo-referencia" class="modal-etiqueta">Código</label>
+      <input type="text" id="campo-referencia" class="modal-input" autocomplete="off" placeholder="Ej: 0047 (o 0047,0048 si es combo)" required>
 
       <label for="campo-codigo" class="modal-etiqueta">Código de barras (o palabra clave)</label>
       <input type="text" id="campo-codigo" class="modal-input" autocomplete="off" placeholder="Ej: 7758451236 o cafe" required>
@@ -125,8 +124,8 @@
       <label for="campo-acceso-nombre" class="modal-etiqueta">Nombre del botón</label>
       <input type="text" id="campo-acceso-nombre" class="modal-input" autocomplete="off" placeholder="Ej: Café" required>
 
-      <label for="campo-acceso-skus" class="modal-etiqueta">SKU</label>
-      <input type="text" id="campo-acceso-skus" class="modal-input" autocomplete="off" placeholder="Ej: 0047 (o 0047,0048 si es combo)" required>
+      <label for="campo-acceso-referencias" class="modal-etiqueta">Código</label>
+      <input type="text" id="campo-acceso-referencias" class="modal-input" autocomplete="off" placeholder="Ej: 0047 (o 0047,0048 si es combo)" required>
 
       <p id="modal-acceso-mensaje" class="modal-mensaje" hidden></p>
 
