@@ -407,6 +407,15 @@ body {
   color: var(--texto-tenue-2);
 }
 
+.mensaje-broma {
+  margin: 6px 0 0;
+  text-align: center;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: var(--texto-tenue-2);
+  opacity: 0.75;
+}
+
 .lista-resultados {
   margin-top: 20px;
 }
