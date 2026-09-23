@@ -128,7 +128,7 @@
         });
       })
       .catch(function () {
-        mostrarError("No se pudo conectar con Factiliza. Revisa tu internet.");
+        mostrarError("ERROR.");
       });
   }
 
